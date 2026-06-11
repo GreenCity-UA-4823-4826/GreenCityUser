@@ -46,10 +46,10 @@ jobs:
 #         with:
 #           go-version: 1.18
 
-     # - name: Build and test
-     #   run: |
-     #     git fetch --unshallow || true
-     #     mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install
+      - name: Build and test
+        run: |
+          git fetch --unshallow || true
+          mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install
 
       - name: SonarCloud analysis
         if: ${{ env.SONAR_TOKEN != '' }}

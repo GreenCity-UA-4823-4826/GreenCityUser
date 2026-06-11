@@ -30,7 +30,6 @@ import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-
 /**
  * Config for security.
  *
@@ -171,7 +170,7 @@ public class SecurityConfig {
                     "/user/employee-email")
                 .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
-                    "/user/updateUserLastActivityTime/{date}"
+                    "/user/updateUserLastActivityTime/{date}")
                 .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
                     "/user/edit-authorities",

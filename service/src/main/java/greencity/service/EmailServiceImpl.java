@@ -29,10 +29,7 @@ import org.thymeleaf.context.Context;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executor;
 
 /**
@@ -50,6 +47,9 @@ public class EmailServiceImpl implements EmailService {
     private final String serverLink;
     private final String senderEmailAddress;
     private static final String PARAM_USER_ID = "&user_id=";
+
+    private static final Set<String> VALID_PLACE_STATUSES = Set.of(
+        "APPROVED", "DECLINED", "DELETED", "PROPOSED");
 
     /**
      * Constructor.
@@ -76,6 +76,9 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendChangePlaceStatusEmail(String authorName, String placeName,
         String placeStatus, String authorEmail) {
+        if (placeStatus == null || !VALID_PLACE_STATUSES.contains(placeStatus)) {
+            throw new NotFoundException("Place status not found: " + placeStatus);
+        }
         log.info(LogMessage.IN_SEND_CHANGE_PLACE_STATUS_EMAIL, placeName);
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);

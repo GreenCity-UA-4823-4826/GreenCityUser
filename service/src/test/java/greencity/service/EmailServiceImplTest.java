@@ -60,7 +60,7 @@ class EmailServiceImplTest {
     void sendChangePlaceStatusEmailTest() {
         String authorFirstName = "test author first name";
         String placeName = "test place name";
-        String placeStatus = "test place status";
+        String placeStatus = "APPROVED";
         String authorEmail = "test author email";
         service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail);
         verify(javaMailSender).createMimeMessage();
@@ -224,5 +224,18 @@ class EmailServiceImplTest {
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.empty());
         NotificationDto dto = NotificationDto.builder().title("title").body("body").build();
         assertThrows(NotFoundException.class, () -> service.sendNotificationByEmail(dto, "test@gmail.com"));
+    }
+
+    @Test
+    void sendChangePlaceStatusEmailWithInvalidStatusThrowsNotFoundException() {
+        String authorFirstName = "Test";
+        String placeName = "hoho";
+        String placeStatus = "string";
+        String authorEmail = "Admin1@gmail.com";
+
+        assertThrows(NotFoundException.class,
+            () -> service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail));
+
+        verify(javaMailSender, never()).createMimeMessage();
     }
 }

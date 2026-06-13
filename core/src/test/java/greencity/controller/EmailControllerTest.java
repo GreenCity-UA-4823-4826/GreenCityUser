@@ -19,9 +19,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,7 +33,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 class EmailControllerTest {
     private static final String LINK = "/email";
+
     private MockMvc mockMvc;
+
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .registerModule(new JavaTimeModule());
 
     @Mock
     private EmailService emailService;
@@ -39,10 +48,15 @@ class EmailControllerTest {
 
     @BeforeEach
     void setUp() {
+        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+        validator.afterPropertiesSet();
+
         this.mockMvc = MockMvcBuilders
-            .standaloneSetup(emailController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-            .build();
+                .standaloneSetup(emailController)
+                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+                .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
+                .setValidator(validator)
+                .build();
     }
 
     @Test
@@ -58,12 +72,28 @@ class EmailControllerTest {
 
         mockPerform(content, "/addEcoNews");
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.registerModule(new JavaTimeModule());
         EcoNewsForSendEmailDto message = objectMapper.readValue(content, EcoNewsForSendEmailDto.class);
 
         verify(emailService).sendCreatedNewsForAuthor(message);
+    }
+
+    @Test
+    void addEcoNewsShouldReturnBadRequestWhenAuthorEmailIsInvalid() throws Exception {
+        String content =
+                "{\"unsubscribeToken\":\"string\"," +
+                        "\"creationDate\":\"2021-02-05T15:10:22.434Z\"," +
+                        "\"imagePath\":\"string\"," +
+                        "\"source\":\"string\"," +
+                        "\"author\":{\"id\":154,\"name\":\"Test1526435\",\"email\":\"Test3421gmail.com\"}," +
+                        "\"title\":\"Test1111\"," +
+                        "\"text\":\"Test1241254125125125124\"}";
+
+        mockMvc.perform(post(LINK + "/addEcoNews")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isBadRequest());
+
+        verify(emailService, never()).sendCreatedNewsForAuthor(any(EcoNewsForSendEmailDto.class));
     }
 
     @Test

@@ -30,6 +30,7 @@ import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+
 /**
  * Config for security.
  *
@@ -98,6 +99,7 @@ public class SecurityConfig {
                                 SC_FORBIDDEN, "You don't have authorities.")))
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/static/css/**", "/static/img/**").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/v2/api-docs/**",
@@ -130,10 +132,14 @@ public class SecurityConfig {
                                 "/ownSecurity/signIn",
                                 "/ownSecurity/updatePassword")
                         .permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/user/isOnline/{userId}/")
+                        .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
+
                         .requestMatchers(HttpMethod.GET, USER_LINK,
                                 "/user/shopping-list-items/habits/{habitId}/shopping-list",
                                 "/user/{userId}/{habitId}/custom-shopping-list-items/available",
-                                "/user/{userId}/profile/", "/user/isOnline/{userId}/",
+                                "/user/{userId}/profile/",
                                 "/user/{userId}/profileStatistics/",
                                 "/user/userAndSixFriendsWithOnlineStatus",
                                 "/user/userAndAllFriendsWithOnlineStatus",

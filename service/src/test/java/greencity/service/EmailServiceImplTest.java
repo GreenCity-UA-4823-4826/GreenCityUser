@@ -29,8 +29,7 @@ import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 class EmailServiceImplTest {
@@ -85,10 +84,32 @@ class EmailServiceImplTest {
     void sendCreatedNewsForAuthorTest() {
         EcoNewsForSendEmailDto dto = new EcoNewsForSendEmailDto();
         PlaceAuthorDto placeAuthorDto = new PlaceAuthorDto();
+        placeAuthorDto.setId(1L);
         placeAuthorDto.setEmail("test@gmail.com");
         dto.setAuthor(placeAuthorDto);
+
+        when(userRepo.findById(1L)).thenReturn(Optional.of(User.builder().id(1L).build()));
+
         service.sendCreatedNewsForAuthor(dto);
+
+        verify(userRepo).findById(1L);
         verify(javaMailSender).createMimeMessage();
+    }
+
+    @Test
+    void sendCreatedNewsForAuthorShouldThrowNotFoundExceptionWhenAuthorNotFound() {
+        EcoNewsForSendEmailDto dto = new EcoNewsForSendEmailDto();
+        PlaceAuthorDto placeAuthorDto = new PlaceAuthorDto();
+        placeAuthorDto.setId(1L);
+        placeAuthorDto.setEmail("test@gmail.com");
+        dto.setAuthor(placeAuthorDto);
+
+        when(userRepo.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> service.sendCreatedNewsForAuthor(dto));
+
+        verify(userRepo).findById(1L);
+        verify(javaMailSender, never()).createMimeMessage();
     }
 
     @Test

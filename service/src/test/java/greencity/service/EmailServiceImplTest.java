@@ -159,7 +159,11 @@ class EmailServiceImplTest {
 
     @Test
     void sendHabitNotification() {
+        when(userRepo.findByEmail("userEmail")).thenReturn(Optional.of(User.builder().build()));
+
         service.sendHabitNotification("userName", "userEmail");
+
+        verify(userRepo).findByEmail("userEmail");
         verify(javaMailSender).createMimeMessage();
     }
 

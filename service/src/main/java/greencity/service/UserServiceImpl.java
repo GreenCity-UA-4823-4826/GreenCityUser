@@ -105,11 +105,29 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public PageableAdvancedDto<UserManagementDto> findUserForManagementByPage(Pageable pageable) {
+        Set<String> allowedSortFields = Set.of(
+                "id",
+                "name",
+                "email",
+                "userCredo",
+                "role",
+                "userStatus"
+        );
+
+        pageable.getSort().forEach(order -> {
+            String property = order.getProperty();
+
+            if (!allowedSortFields.contains(property)) {
+                throw new BadRequestException("Invalid sort parameter: " + property);
+            }
+        });
+
         Page<User> users = userRepo.findAll(pageable);
         List<UserManagementDto> userManagementDtos =
             users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserManagementDto.class))
                 .collect(Collectors.toList());
+
         return new PageableAdvancedDto<>(
             userManagementDtos,
             users.getTotalElements(),

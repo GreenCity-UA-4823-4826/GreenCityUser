@@ -6,7 +6,7 @@ name: CI/CD GreenCityUser
 concurrency: Testing
 
 permissions:
-  contents: read
+  contents: write
   checks: write
   pull-requests: read
 

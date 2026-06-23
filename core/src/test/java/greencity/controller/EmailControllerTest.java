@@ -37,8 +37,8 @@ class EmailControllerTest {
     private MockMvc mockMvc;
 
     private final ObjectMapper objectMapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .registerModule(new JavaTimeModule());
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .registerModule(new JavaTimeModule());
 
     @Mock
     private EmailService emailService;
@@ -52,11 +52,11 @@ class EmailControllerTest {
         validator.afterPropertiesSet();
 
         this.mockMvc = MockMvcBuilders
-                .standaloneSetup(emailController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
-                .setValidator(validator)
-                .build();
+            .standaloneSetup(emailController)
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
+            .setValidator(validator)
+            .build();
     }
 
     @Test
@@ -80,18 +80,18 @@ class EmailControllerTest {
     @Test
     void addEcoNewsShouldReturnBadRequestWhenAuthorEmailIsInvalid() throws Exception {
         String content =
-                "{\"unsubscribeToken\":\"string\"," +
-                        "\"creationDate\":\"2021-02-05T15:10:22.434Z\"," +
-                        "\"imagePath\":\"string\"," +
-                        "\"source\":\"string\"," +
-                        "\"author\":{\"id\":154,\"name\":\"Test1526435\",\"email\":\"Test3421gmail.com\"}," +
-                        "\"title\":\"Test1111\"," +
-                        "\"text\":\"Test1241254125125125124\"}";
+            "{\"unsubscribeToken\":\"string\"," +
+                "\"creationDate\":\"2021-02-05T15:10:22.434Z\"," +
+                "\"imagePath\":\"string\"," +
+                "\"source\":\"string\"," +
+                "\"author\":{\"id\":154,\"name\":\"Test1526435\",\"email\":\"Test3421gmail.com\"}," +
+                "\"title\":\"Test1111\"," +
+                "\"text\":\"Test1241254125125125124\"}";
 
         mockMvc.perform(post(LINK + "/addEcoNews")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().isBadRequest());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isBadRequest());
 
         verify(emailService, never()).sendCreatedNewsForAuthor(any(EcoNewsForSendEmailDto.class));
     }

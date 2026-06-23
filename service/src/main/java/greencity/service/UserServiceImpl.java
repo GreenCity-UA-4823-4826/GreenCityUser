@@ -106,13 +106,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageableAdvancedDto<UserManagementDto> findUserForManagementByPage(Pageable pageable) {
         Set<String> allowedSortFields = Set.of(
-                "id",
-                "name",
-                "email",
-                "userCredo",
-                "role",
-                "userStatus"
-        );
+            "id",
+            "name",
+            "email",
+            "userCredo",
+            "role",
+            "userStatus");
 
         pageable.getSort().forEach(order -> {
             String property = order.getProperty();

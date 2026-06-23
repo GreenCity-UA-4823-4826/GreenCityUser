@@ -152,7 +152,7 @@ public class SecurityConfig {
                     "/user/{userId}/sixUserFriends/",
                     "/ownSecurity/password-status",
                     "/user/emailNotifications")
-                .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
+                .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                 .requestMatchers(HttpMethod.POST, USER_LINK,
                     "/user/shopping-list-items",
                     "/user/{userId}/habit",

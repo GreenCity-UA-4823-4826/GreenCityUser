@@ -31,12 +31,12 @@ public class EmailController {
      * @param message - object with all necessary data for sending email
      * @author Taras Kavkalo
      */
+    @Operation(summary = "Send created eco news email to author")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
-    @Operation(summary = "Send created eco news email to author")
     @PostMapping("/addEcoNews")
     public ResponseEntity<Object> addEcoNews(@Valid @RequestBody EcoNewsForSendEmailDto message) {
         emailService.sendCreatedNewsForAuthor(message);

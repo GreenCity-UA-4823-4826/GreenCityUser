@@ -315,7 +315,7 @@ public class UserServiceImpl implements UserService {
         accessForUpdateUserStatus(id, email);
 
         User user = userRepo.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID));
 
         user.setUserStatus(userStatus);
         User savedUser = userRepo.save(user);

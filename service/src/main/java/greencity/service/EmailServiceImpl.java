@@ -77,6 +77,8 @@ public class EmailServiceImpl implements EmailService {
     public void sendChangePlaceStatusEmail(String authorName, String placeName,
         String placeStatus, String authorEmail) {
         log.info(LogMessage.IN_SEND_CHANGE_PLACE_STATUS_EMAIL, placeName);
+        userRepo.findByEmail(authorEmail)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + authorEmail));
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, authorName);
@@ -126,7 +128,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendCreatedNewsForAuthor(EcoNewsForSendEmailDto newDto) {
         userRepo.findById(newDto.getAuthor().getId())
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID));
 
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);

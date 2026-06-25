@@ -62,8 +62,21 @@ class EmailServiceImplTest {
         String placeName = "test place name";
         String placeStatus = "test place status";
         String authorEmail = "test author email";
+        when(userRepo.findByEmail(authorEmail)).thenReturn(Optional.of(User.builder().build()));
         service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail);
         verify(javaMailSender).createMimeMessage();
+    }
+
+    @Test
+    void sendChangePlaceStatusEmailShouldThrowNotFoundExceptionWhenUserNotFound() {
+        String authorFirstName = "test author first name";
+        String placeName = "test place name";
+        String placeStatus = "test place status";
+        String authorEmail = "test author email";
+        when(userRepo.findByEmail(authorEmail)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class,
+            () -> service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail));
+        verify(javaMailSender, never()).createMimeMessage();
     }
 
     @Test

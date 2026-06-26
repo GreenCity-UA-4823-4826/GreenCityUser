@@ -22,6 +22,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -113,7 +115,7 @@ class EmailControllerTest {
     @Test
     void sendHabitNotification() throws Exception {
         String content = "{" +
-            "\"email\":\"string\"," +
+            "\"email\":\"string@gmail.com\"," +
             "\"name\":\"string\"" +
             "}";
 
@@ -123,6 +125,21 @@ class EmailControllerTest {
             new ObjectMapper().readValue(content, SendHabitNotification.class);
 
         verify(emailService).sendHabitNotification(notification.getName(), notification.getEmail());
+    }
+
+    @Test
+    void sendHabitNotificationWithInvalidEmail() throws Exception {
+        String content = "{" +
+            "\"email\":\"1111gmail.com\"," +
+            "\"name\":\"1111\"" +
+            "}";
+
+        mockMvc.perform(post(LINK + "/sendHabitNotification")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isBadRequest());
+
+        verify(emailService, never()).sendHabitNotification(anyString(), anyString());
     }
 
     private void mockPerform(String content, String subLink) throws Exception {

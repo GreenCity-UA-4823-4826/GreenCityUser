@@ -105,11 +105,28 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public PageableAdvancedDto<UserManagementDto> findUserForManagementByPage(Pageable pageable) {
+        Set<String> allowedSortFields = Set.of(
+            "id",
+            "name",
+            "email",
+            "userCredo",
+            "role",
+            "userStatus");
+
+        pageable.getSort().forEach(order -> {
+            String property = order.getProperty();
+
+            if (!allowedSortFields.contains(property)) {
+                throw new BadRequestException("Invalid sort parameter: " + property);
+            }
+        });
+
         Page<User> users = userRepo.findAll(pageable);
         List<UserManagementDto> userManagementDtos =
             users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserManagementDto.class))
                 .collect(Collectors.toList());
+
         return new PageableAdvancedDto<>(
             userManagementDtos,
             users.getTotalElements(),
@@ -313,10 +330,14 @@ public class UserServiceImpl implements UserService {
     public UserStatusDto updateStatus(Long id, UserStatus userStatus, String email) {
         checkUpdatableUser(id, email);
         accessForUpdateUserStatus(id, email);
-        UserVO userVO = findById(id);
-        userVO.setUserStatus(userStatus);
-        User map = modelMapper.map(userVO, User.class);
-        return modelMapper.map(userRepo.save(map), UserStatusDto.class);
+
+        User user = userRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID));
+
+        user.setUserStatus(userStatus);
+        User savedUser = userRepo.save(user);
+
+        return new UserStatusDto(savedUser.getId(), savedUser.getUserStatus());
     }
 
     /**

@@ -155,7 +155,7 @@ public class SecurityConfig {
 
                 .requestMatchers(HttpMethod.POST, "/email/sendHabitNotification")
                 .hasAnyRole(ADMIN, MODERATOR, EMPLOYEE)
-                                   
+
                 .requestMatchers(HttpMethod.POST, USER_LINK,
                     "/user/shopping-list-items",
                     "/user/{userId}/habit",

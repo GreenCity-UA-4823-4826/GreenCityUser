@@ -106,7 +106,7 @@ public class EmailController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("/sendUserViolation")
-    public ResponseEntity<Object> sendUserViolation(@Valid @RequestBody UserViolationMailDto dto) {
+    public ResponseEntity<Void> sendUserViolation(@Valid @RequestBody UserViolationMailDto dto) {
         emailService.sendUserViolationEmail(dto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

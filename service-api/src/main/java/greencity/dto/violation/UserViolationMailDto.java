@@ -18,5 +18,6 @@ public class UserViolationMailDto {
     private String email;
     @NotBlank
     private String language;
+    @NotBlank
     private String violationDescription;
 }

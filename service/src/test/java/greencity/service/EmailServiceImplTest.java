@@ -214,8 +214,25 @@ class EmailServiceImplTest {
     @Test
     void sendUserViolationEmailTest() {
         UserViolationMailDto dto = ModelUtils.getUserViolationMailDto();
+
+        when(userRepo.existsUserByEmail(dto.getEmail())).thenReturn(true);
+
         service.sendUserViolationEmail(dto);
+
+        verify(userRepo).existsUserByEmail(dto.getEmail());
         verify(javaMailSender).createMimeMessage();
+    }
+
+    @Test
+    void sendUserViolationEmailShouldThrowNotFoundExceptionWhenUserNotFound() {
+        UserViolationMailDto dto = ModelUtils.getUserViolationMailDto();
+
+        when(userRepo.existsUserByEmail(dto.getEmail())).thenReturn(false);
+
+        assertThrows(NotFoundException.class, () -> service.sendUserViolationEmail(dto));
+
+        verify(userRepo).existsUserByEmail(dto.getEmail());
+        verify(javaMailSender, never()).createMimeMessage();
     }
 
     @Test

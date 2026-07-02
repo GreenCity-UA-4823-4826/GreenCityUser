@@ -180,16 +180,35 @@ class EmailControllerTest {
 
     @Test
     void sendUserViolationEmailTest() throws Exception {
-        String content = "{" +
-            "\"name\":\"String\"," +
-            "\"email\":\"String@gmail.com\"," +
-            "\"violationDescription\":\"string string\"" +
-            "}";
+        String content = "{"
+            + "\"name\":\"String\","
+            + "\"email\":\"string@gmail.com\","
+            + "\"language\":\"en\","
+            + "\"violationDescription\":\"string string\""
+            + "}";
 
         mockPerform(content, "/sendUserViolation");
 
         UserViolationMailDto userViolationMailDto = new ObjectMapper().readValue(content, UserViolationMailDto.class);
         verify(emailService).sendUserViolationEmail(userViolationMailDto);
+    }
+
+    @Test
+    void sendUserViolationEmailWithInvalidEmailShouldReturnBadRequest() throws Exception {
+        String content = "{"
+            + "\"name\":\"String\","
+            + "\"email\":\"Stringgmail.com\","
+            + "\"language\":\"en\","
+            + "\"violationDescription\":\"string string\""
+            + "}";
+
+        mockMvc.perform(post(LINK + "/sendUserViolation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isBadRequest());
+
+        verify(emailService, never())
+            .sendUserViolationEmail(org.mockito.ArgumentMatchers.any(UserViolationMailDto.class));
     }
 
     @Test

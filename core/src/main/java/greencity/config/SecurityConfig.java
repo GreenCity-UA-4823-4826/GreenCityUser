@@ -152,12 +152,15 @@ public class SecurityConfig {
                     "/ownSecurity/password-status",
                     "/user/emailNotifications")
                 .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
+
+                .requestMatchers(HttpMethod.POST, "/email/sendHabitNotification")
+                .hasAnyRole(ADMIN, MODERATOR, EMPLOYEE)
+
                 .requestMatchers(HttpMethod.POST, USER_LINK,
                     "/user/shopping-list-items",
                     "/user/{userId}/habit",
                     "/ownSecurity/set-password",
                     "/email/sendReport",
-                    "/email/sendHabitNotification",
                     "/email/addEcoNews",
                     "/email/changePlaceStatus",
                     "/email/general/notification")

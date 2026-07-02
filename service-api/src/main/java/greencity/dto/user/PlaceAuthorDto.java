@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,5 +19,7 @@ import lombok.Setter;
 public class PlaceAuthorDto implements Serializable {
     private Long id;
     private String name;
+    @NotBlank
+    @Email
     private String email;
 }

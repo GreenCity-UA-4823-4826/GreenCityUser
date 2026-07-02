@@ -2,6 +2,8 @@ package greencity.dto.econews;
 
 import greencity.dto.user.PlaceAuthorDto;
 import java.time.ZonedDateTime;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @AllArgsConstructor
@@ -20,6 +22,8 @@ public class EcoNewsForSendEmailDto {
 
     private String source;
 
+    @Valid
+    @NotNull
     private PlaceAuthorDto author;
 
     private String title;

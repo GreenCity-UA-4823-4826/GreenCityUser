@@ -2,8 +2,6 @@ package greencity.security.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
 import greencity.constant.AppConstant;
 import greencity.dto.user.UserVO;
 import greencity.entity.Language;
@@ -11,6 +9,7 @@ import greencity.entity.User;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.BadUserStatusException;
 import greencity.repository.UserRepo;
 import greencity.security.dto.SuccessSignInDto;
@@ -32,8 +31,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
 
     private final UserRepo userRepo;
     private final JwtTool jwtTool;
-    private final GoogleIdTokenVerifier googleIdTokenVerifier =
-        new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), GsonFactory.getDefaultInstance()).build();
+    private final GoogleIdTokenVerifier googleIdTokenVerifier;
 
     @Value("${google.clientId}")
     private String googleClientId;
@@ -60,25 +58,25 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
 
     private GoogleIdToken.Payload verifyToken(String idToken) {
         if (idToken == null || idToken.isBlank()) {
-            throw new IllegalArgumentException("Google idToken is required");
+            throw new BadRequestException("Google idToken is required");
         }
 
         try {
             GoogleIdToken googleIdToken = googleIdTokenVerifier.verify(idToken);
             if (googleIdToken == null) {
-                throw new IllegalArgumentException("Google idToken is invalid");
+                throw new BadRequestException("Google idToken is invalid");
             }
 
             GoogleIdToken.Payload payload = googleIdToken.getPayload();
             if (!isExpectedAudience(payload.getAudience())) {
-                throw new IllegalArgumentException("Google idToken audience is invalid");
+                throw new BadRequestException("Google idToken audience is invalid");
             }
             if (!Boolean.TRUE.equals(payload.getEmailVerified())) {
-                throw new IllegalArgumentException("Google email is not verified");
+                throw new BadRequestException("Google email is not verified");
             }
             return payload;
         } catch (GeneralSecurityException | IOException e) {
-            throw new IllegalArgumentException("Google idToken cannot be verified", e);
+            throw new BadRequestException("Google idToken cannot be verified");
         }
     }
 

@@ -260,8 +260,8 @@ public class SecurityConfig {
             : Arrays.asList(googleClientId, googleClientIdManager);
         return new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
             GsonFactory.getDefaultInstance())
-            .setAudience(audiences)
-            .setAcceptableTimeSkewSeconds(120)
-            .build();
+                .setAudience(audiences)
+                .setAcceptableTimeSkewSeconds(120)
+                .build();
     }
 }

@@ -2,6 +2,7 @@
 /shelf/
 /workspace.xml
 /.idea
+.env
 
 logs/
 HELP.md

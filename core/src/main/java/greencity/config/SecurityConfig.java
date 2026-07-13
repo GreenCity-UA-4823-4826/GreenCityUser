@@ -7,7 +7,10 @@ import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import greencity.service.UserService;
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,8 +26,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import java.util.Arrays;
-import java.util.Collections;
 import static greencity.constant.AppConstant.*;
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
@@ -44,6 +45,10 @@ public class SecurityConfig {
     private final UserService userService;
     private static final String USER_LINK = "/user";
     private final AuthenticationConfiguration authenticationConfiguration;
+    @Value("${google.clientId}")
+    private String googleClientId;
+    @Value("${google.clientId.manager:}")
+    private String googleClientIdManager;
 
     /**
      * Constructor.
@@ -74,15 +79,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
             CorsConfiguration config = new CorsConfiguration();
-            config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-            config.setAllowedOrigins(Collections.singletonList("http://localhost:4205"));
+            config.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "http://localhost:4200",
+                "http://localhost:4205"));
             config.setAllowedMethods(
                 Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
-            config.setAllowedHeaders(
-                Arrays.asList("Access-Control-Allow-Origin", "Access-Control-Allow-Headers",
-                    "X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
+            config.setAllowedHeaders(Arrays.asList("*"));
             config.setAllowCredentials(true);
-            config.setAllowedHeaders(Collections.singletonList("*"));
             config.setMaxAge(3600L);
             return config;
         }))
@@ -254,7 +258,13 @@ public class SecurityConfig {
      */
     @Bean
     public GoogleIdTokenVerifier googleIdTokenVerifier() {
+        List<String> audiences = googleClientIdManager == null || googleClientIdManager.isBlank()
+            ? List.of(googleClientId)
+            : Arrays.asList(googleClientId, googleClientIdManager);
         return new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
-            GsonFactory.getDefaultInstance()).build();
+            GsonFactory.getDefaultInstance())
+                .setAudience(audiences)
+                .setAcceptableTimeSkewSeconds(120)
+                .build();
     }
 }

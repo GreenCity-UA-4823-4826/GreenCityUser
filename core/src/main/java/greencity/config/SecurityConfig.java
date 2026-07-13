@@ -264,4 +264,11 @@ public class SecurityConfig {
                 .setAcceptableTimeSkewSeconds(120)
                 .build();
     }
+    @@ -264,4 +264,4 @@ public GoogleIdTokenVerifier googleIdTokenVerifier() {
+             .setAcceptableTimeSkewSeconds(120)
+             .build();
+         }
+-}
+\ No newline at end of file
++}
 }

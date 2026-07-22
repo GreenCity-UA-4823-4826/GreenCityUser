@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -95,6 +96,17 @@ class EmailControllerTest {
             .andExpect(status().isBadRequest());
 
         verify(emailService, never()).sendCreatedNewsForAuthor(any(EcoNewsForSendEmailDto.class));
+    }
+
+    @Test
+    void sendNewsletter() throws Exception {
+        String content = "{" +
+            "\"subscribers\":[{\"email\":\"test@gmail.com\",\"unsubscribeToken\":\"token\"}]," +
+            "\"addEcoNewsDtoResponse\":{\"id\":1,\"title\":\"Eco news\",\"text\":\"Text\"}}";
+
+        mockPerform(content, "/sendNewsletter");
+
+        verify(emailService).sendNewNewsForSubscriber(anyList(), any());
     }
 
     @Test

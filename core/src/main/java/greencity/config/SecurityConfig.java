@@ -166,6 +166,7 @@ public class SecurityConfig {
                     "/ownSecurity/set-password",
                     "/email/sendReport",
                     "/email/addEcoNews",
+                    "/email/sendNewsletter",
                     "/email/changePlaceStatus",
                     "/email/general/notification")
                 .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)

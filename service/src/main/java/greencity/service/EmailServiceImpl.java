@@ -114,9 +114,8 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.NEWS_RESULT, newsDto);
         for (NewsSubscriberResponseDto dto : subscribers) {
             try {
-                model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink + "/newsSubscriber/unsubscribe?email="
-                    + URLEncoder.encode(dto.getEmail(), StandardCharsets.UTF_8.toString())
-                    + "&unsubscribeToken=" + dto.getUnsubscribeToken());
+                model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink + "/news-subscribers/unsubscribe?token="
+                    + URLEncoder.encode(dto.getUnsubscribeToken(), StandardCharsets.UTF_8.toString()));
             } catch (UnsupportedEncodingException e) {
                 log.error(e.getMessage());
             }

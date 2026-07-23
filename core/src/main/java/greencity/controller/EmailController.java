@@ -5,6 +5,7 @@ import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.violation.UserViolationMailDto;
 import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.message.AddEcoNewsMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
 import greencity.service.EmailService;
@@ -40,6 +41,13 @@ public class EmailController {
     @PostMapping("/addEcoNews")
     public ResponseEntity<Object> addEcoNews(@Valid @RequestBody EcoNewsForSendEmailDto message) {
         emailService.sendCreatedNewsForAuthor(message);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/sendNewsletter")
+    public ResponseEntity<Object> sendNewsletter(@Valid @RequestBody AddEcoNewsMessage message) {
+        emailService.sendNewNewsForSubscriber(
+            message.getSubscribers(), message.getAddEcoNewsDtoResponse());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

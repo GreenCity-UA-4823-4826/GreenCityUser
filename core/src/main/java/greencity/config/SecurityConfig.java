@@ -138,7 +138,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, USER_LINK,
                     "/user/shopping-list-items/habits/{habitId}/shopping-list",
                     "/user/{userId}/{habitId}/custom-shopping-list-items/available",
-                    "/user/{userId}/profile/", "/user/isOnline/{userId}/",
+                    "/user/isOnline/{userId}/",
                     "/user/userAndSixFriendsWithOnlineStatus",
                     "/user/userAndAllFriendsWithOnlineStatus",
                     "/user/findByIdForAchievement",
@@ -156,6 +156,9 @@ public class SecurityConfig {
                     "/ownSecurity/password-status",
                     "/user/emailNotifications")
                 .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
+
+                .requestMatchers(HttpMethod.GET, "/user/{userId}/profile/")
+                .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
 
                 .requestMatchers(HttpMethod.POST, "/email/sendHabitNotification")
                 .hasAnyRole(ADMIN, MODERATOR, EMPLOYEE)
@@ -180,7 +183,7 @@ public class SecurityConfig {
                     "/user/updateUserLastActivityTime/{date}")
                 .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                 .requestMatchers(HttpMethod.GET, "/user/{userId}/profileStatistics/")
-                .hasAnyRole(USER)
+                .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
                     "/user/edit-authorities",
                     "/user/authorities",

@@ -135,6 +135,8 @@ public class SecurityConfig {
                     "/ownSecurity/signIn",
                     "/ownSecurity/updatePassword")
                 .permitAll()
+                .requestMatchers(HttpMethod.GET, "/user/findByEmail")
+                .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                 .requestMatchers(HttpMethod.GET, USER_LINK,
                     "/user/shopping-list-items/habits/{habitId}/shopping-list",
                     "/user/{userId}/{habitId}/custom-shopping-list-items/available",
@@ -143,7 +145,6 @@ public class SecurityConfig {
                     "/user/userAndAllFriendsWithOnlineStatus",
                     "/user/findByIdForAchievement",
                     "/user/findNotDeactivatedByEmail",
-                    "/user/findByEmail",
                     "/user/findIdByEmail",
                     "/user/findAllUsersCities",
                     "/user/findById",
